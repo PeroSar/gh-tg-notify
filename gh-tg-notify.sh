@@ -1,10 +1,20 @@
 #!/usr/bin/env bash
 
+# Get chatID
+CID=${QUERY_STRING#*chat=}
+CID=${CID%%&*}
+CID=${CID//+/}
+
+if [ -z "$CID" ]; then
+    echo "ChatID not found in URL"
+    exit 1
+fi
+
 # TG functions
 tg_msg() {
 	curl -o /dev/null -sX POST "$TG_API_BASE"/sendMessage \
 		-d "parse_mode=markdown" \
-		-d "chat_id=$TG_CHATID" \
+		-d "chat_id=$CID" \
 		-d "text=$1" \
 		-d "reply_markup=$2"
 }
@@ -20,8 +30,8 @@ GITHUB_JSON=$(</dev/stdin)
 DOTENV=$(dirname "$(realpath "$0")")/.env
 [ -f "$DOTENV" ] && source "$DOTENV"
 
-if [ -z "$TG_TOKEN" ] || [ -z "$TG_CHATID" ]; then
-	echo "\$TG_TOKEN or \$TG_CHATID not found in env"
+if [ -z "$TG_TOKEN" ]; then
+	echo "\$TG_TOKEN not found in env"
 	exit 1
 fi
 

@@ -11,10 +11,9 @@ This file should be in the same directory as script
 
 ```sh
 TG_TOKEN="...:..."
-TG_CHATID="-..."
 ```
 
 ## Setup notifications
 
 - Open webhook settings in your GitHub repository
-- Add a new webhook with URL of script, and content-type application/json
+- Add a new webhook with `URL of script?chat=your_chat_id`, and content-type application/json
