@@ -6,8 +6,8 @@ CID=${CID%%&*}
 CID=${CID//+/}
 
 if [ -z "$CID" ]; then
-    echo "ChatID not found in URL"
-    exit 1
+	echo "ChatID not found in URL"
+	exit 1
 fi
 
 # TG functions
@@ -27,8 +27,8 @@ tg_create_inlinekb_url() {
 GITHUB_JSON=$(</dev/stdin)
 
 # Read secrets from .env
-DOTENV=$(dirname "$(realpath "$0")")/.env
-[ -f "$DOTENV" ] && source "$DOTENV"
+SRCDIR=$(dirname "$(realpath "$0")")
+[ -f "$SRCDIR"/.env ] && source "$SRCDIR"/.env
 
 if [ -z "$TG_TOKEN" ]; then
 	echo "\$TG_TOKEN not found in env"
@@ -48,6 +48,9 @@ for COMMIT in "${COMMITS[@]}"; do
 	COMMIT_ID=$(jq -r '.id' <<<"$COMMIT")
 	COMMIT_URL=$(jq -r '.url' <<<"$COMMIT")
 	COMMIT_MSG=$(jq -r '.message' <<<"$COMMIT")
+	COMMIT_MSG=${COMMIT_MSG/&/AND}
+	COMMIT_MSG=$(python3 "$SRCDIR"/md-escape.py "$COMMIT_MSG")
+
 	tg_msg "*New commit by $COMMIT_AUTHOR in $GH_REPO!* \[\`${COMMIT_ID:0:7}\`]
 
 $COMMIT_MSG" "$(tg_create_inlinekb_url "View on GitHub" "$COMMIT_URL")"
