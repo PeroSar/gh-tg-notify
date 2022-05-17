@@ -40,8 +40,14 @@ TG_API_BASE="https://api.telegram.org/bot$TG_TOKEN"
 # Set repository name
 GH_REPO=$(jq -r .repository.full_name <<<"$GITHUB_JSON")
 
+# Set limit for number of messages at one time
+GH_COMMIT_LIMIT=8
+
 # Parse and notify
 readarray -t COMMITS < <(jq -c '.commits[]' <<<"$GITHUB_JSON")
+
+# Anything more than the limit will be removed out
+COMMITS=("${COMMITS[@]:0:$GH_COMMIT_LIMIT}")
 
 for COMMIT in "${COMMITS[@]}"; do
 	COMMIT_AUTHOR=$(jq -r '.author.username' <<<"$COMMIT")
