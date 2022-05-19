@@ -37,8 +37,10 @@ fi
 
 TG_API_BASE="https://api.telegram.org/bot$TG_TOKEN"
 
-# Set repository name
-GH_REPO=$(jq -r .repository.full_name <<<"$GITHUB_JSON")
+# Set {repository,branch} name
+GH_REPO=$(jq -r '.repository.full_name' <<<"$GITHUB_JSON")
+GH_BRANCH=$(jq -r '.ref' <<<"$GITHUB_JSON")
+GH_BRANCH=${GH_BRANCH#refs/heads/}
 
 # Set limit for number of messages at one time
 GH_COMMIT_LIMIT=8
@@ -57,7 +59,7 @@ for COMMIT in "${COMMITS[@]}"; do
 	COMMIT_MSG=${COMMIT_MSG/&/AND}
 	COMMIT_MSG=$(python3 "$SRCDIR"/md-escape.py "$COMMIT_MSG")
 
-	tg_msg "*New commit by $COMMIT_AUTHOR in $GH_REPO!* \[\`${COMMIT_ID:0:7}\`]
+	tg_msg "*New commit by $COMMIT_AUTHOR in $GH_REPO!* \[$GH_BRANCH \`${COMMIT_ID:0:7}\`]
 
 $COMMIT_MSG" "$(tg_create_inlinekb_url "View on GitHub" "$COMMIT_URL")"
 done
