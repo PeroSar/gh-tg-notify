@@ -14,6 +14,7 @@ fi
 tg_msg() {
 	curl -o /dev/null -sX POST "$TG_API_BASE"/sendMessage \
 		-d "parse_mode=markdown" \
+		-d "disable_web_page_preview=true" \
 		-d "chat_id=$CID" \
 		-d "text=$1" \
 		-d "reply_markup=$2"
